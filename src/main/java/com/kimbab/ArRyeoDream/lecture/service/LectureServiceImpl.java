@@ -145,6 +145,7 @@ public class LectureServiceImpl implements LectureService {
         Optional<Lecture> lecture = lectureRepository.findById(id);
         if(lecture.isPresent()){
             lectureImageRepository.deleteAllByLectureId(id);
+            lectureCommentRepository.deleteAllByLectureId(id);
             lectureRepository.delete(lecture.get());
         }
         else{

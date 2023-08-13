@@ -9,5 +9,6 @@ import java.util.List;
 @Repository
 public interface LectureCommentRepository extends JpaRepository<LectureComment, Long> {
     List<LectureComment> findAllByLectureId(Long lectureId);
+    Long deleteAllByLectureId(Long lectureId);
     LectureComment findByLectureIdAndAttendeeId(Long lectureId, Long attendeeId);
 }
