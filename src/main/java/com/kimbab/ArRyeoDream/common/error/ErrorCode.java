@@ -13,6 +13,8 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생하였습니다."),
     //lecture
     LECTURE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 강좌를 찾을 수 없습니다."),
+    //community
+    COMMUNITY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 커뮤니티 게시글을 찾을 수 없습니다."),
     //attendee
     ATTENDEE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 비회원 유저를 찾을 수 없습니다."),
     //comment
