@@ -2,6 +2,7 @@ package com.kimbab.ArRyeoDream.config;
 
 import com.kimbab.ArRyeoDream.jwt.JwtAuthenticationFilter;
 import com.kimbab.ArRyeoDream.jwt.JwtTokenProvider;
+import com.kimbab.ArRyeoDream.oauth2.CustomOAuth2TokenResponseClient;
 import com.kimbab.ArRyeoDream.oauth2.OAuth2AuthenticationFailureHandler;
 import com.kimbab.ArRyeoDream.oauth2.OAuth2AuthenticationSuccessHandler;
 import com.kimbab.ArRyeoDream.repository.CookieAuthorizationRequestRepository;
@@ -17,6 +18,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.firewall.DefaultHttpFirewall;
 import org.springframework.security.web.firewall.HttpFirewall;
+
+import java.security.Security;
 
 @RequiredArgsConstructor
 @EnableWebSecurity
@@ -42,21 +45,24 @@ public class WebSecurityConfigure  {
 
         //요청에 대한 권한 설정
         http.authorizeRequests()
-                .antMatchers("/oauth2/**").permitAll()
+                .antMatchers("/**").permitAll()
                 .anyRequest().authenticated();
 
         //oauth2Login
         http.oauth2Login()
-                .authorizationEndpoint().baseUri("/oauth2/authorize/")  // 소셜 로그인 url
+                .tokenEndpoint(tokenEndpoint -> tokenEndpoint.accessTokenResponseClient(new CustomOAuth2TokenResponseClient()))
+                .authorizationEndpoint().baseUri("/oauth2/authorize")  // 소셜 로그인 url
                 .authorizationRequestRepository(cookieAuthorizationRequestRepository)  // 인증 요청을 cookie 에 저장
                 .and()
-                .redirectionEndpoint().baseUri("/Login/Redirect/redirect.html")  // 소셜 인증 후 redirect url
+                .redirectionEndpoint().baseUri("/login/oauth2/code/*")  // 소셜 인증 후 redirect url
                 .and()
                 //userService()는 OAuth2 인증 과정에서 Authentication 생성에 필요한 OAuth2User 를 반환하는 클래스를 지정한다.
                 .userInfoEndpoint().userService(customOAuth2UserService)  // 회원 정보 처리
                 .and()
+
                 .successHandler(oAuth2AuthenticationSuccessHandler)
                 .failureHandler(oAuth2AuthenticationFailureHandler);
+
 
         http.logout()
                 .clearAuthentication(true)

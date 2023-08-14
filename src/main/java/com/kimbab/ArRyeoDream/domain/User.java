@@ -1,6 +1,6 @@
 package com.kimbab.ArRyeoDream.domain;
 
-import com.kimbab.ArRyeoDream.enums.AuthProvider;
+import com.kimbab.ArRyeoDream.enums.OAuthProvider;
 import com.kimbab.ArRyeoDream.enums.Role;
 import com.kimbab.ArRyeoDream.oauth2.OAuth2UserInfo;
 import lombok.*;
@@ -29,7 +29,7 @@ public class User {
     private Role role;
 
     @Enumerated(EnumType.STRING)
-    private AuthProvider authProvider;
+    private OAuthProvider OAuthProvider;
 
     public User update(OAuth2UserInfo oAuth2UserInfo) {
         this.name = oAuth2UserInfo.getName();

@@ -27,6 +27,7 @@ import static com.kimbab.ArRyeoDream.repository.CookieAuthorizationRequestReposi
 @RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
+    //oauth 인증 성공 시
     @Value("${oauth.authorizedRedirectUri}")
     private String redirectUri;
     private final JwtTokenProvider jwtTokenProvider;

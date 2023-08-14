@@ -18,23 +18,28 @@ import java.util.Map;
 @Getter
 @AllArgsConstructor
 public class UserPrincipal implements OAuth2User, UserDetails {
+    // 인증된 유저 정보 담는 객체
     private Long id;
     private String email;
+    private String name;
     private Collection<? extends GrantedAuthority> authorities;
 
     @Setter
     private Map<String, Object> attributes;
 
-    public UserPrincipal(Long id, String email, Collection<? extends GrantedAuthority> authorities) {
+    public UserPrincipal(Long id, String email,String name, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.email = email;
+        this.name = name;
         this.authorities = authorities;
     }
 
     public static UserPrincipal create(User user, Map<String, Object> attributes) {
+
         List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(Role.ROLE_USER.name()));
-        UserPrincipal userPrincipal = new UserPrincipal(user.getId(), user.getEmail(), authorities);
+        UserPrincipal userPrincipal = new UserPrincipal(user.getId(), user.getEmail(), user.getName(), authorities);
         userPrincipal.setAttributes(attributes);
+        System.out.println(" userPrincipal 되나 확인중!!");
         return userPrincipal;
     }
 
@@ -80,6 +85,6 @@ public class UserPrincipal implements OAuth2User, UserDetails {
 
     @Override
     public String getName() {
-        return String.valueOf(id);
+        return name;
     }
 }
