@@ -1,18 +1,39 @@
 package com.kimbab.ArRyeoDream.controller;
 
-import com.kimbab.ArRyeoDream.dto.UserResponseDto;
-import com.kimbab.ArRyeoDream.service.CustomOAuth2UserService;
+
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-
+import javax.servlet.http.HttpSession;
+@Slf4j
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api")
 public class UserController {
+//
+//    private KaKaoAPI kakaoapi;
+//
+//    public UserController(){
+//        kakaoapi = new KaKaoAPI();
+//    }
+//
+//    @PostMapping(value = "/logout")
+//    public ResponseEntity<Void> logout(HttpServletRequest request){
+//        HttpSession session = request.getSession();
+//        String accessToken = (String) session.getAttribute("access_token");
+//
+//        if(accessToken!=null&&!"".equals(accessToken)){
+//            kakaoapi.logout(accessToken);
+//            session.removeAttribute("access_token");
+//            session.removeAttribute("user");
+//
+//            System.out.println(" 로그아웃 " );
+//        }
+//        return ResponseEntity.ok().build();
+//    }
 
 //    private final CustomOAuth2UserService oAuth2UserService;
 //    // 임시 회원 가입 컨트롤러
