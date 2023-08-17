@@ -21,7 +21,7 @@ public class LectureController {
         return ResponseEntity.ok().body(lectureService.getLectureList(pageable, sort));
     }
 
-    @GetMapping("/board/{id}")
+    @GetMapping("/boards/{id}")
     public ResponseEntity<?> getLectureDetail(@PathVariable(name = "id") Long id){
         return ResponseEntity.ok().body(lectureService.getLectureDetail(id));
     }

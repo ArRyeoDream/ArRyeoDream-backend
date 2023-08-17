@@ -21,7 +21,7 @@ public class CommunityController {
         return ResponseEntity.ok().body(communityService.getCommunityList(pageable));
     }
 
-    @GetMapping("/board/{id}")
+    @GetMapping("/boards/{id}")
     public ResponseEntity<?> getLectureDetail(@PathVariable(name = "id") Long id){
         return ResponseEntity.ok().body(communityService.getCommunityDetail(id));
     }

@@ -23,12 +23,12 @@ import java.util.Date;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class JwtResolver {
-    @Value("${jwt.secret-key}")
-    private static String SECRET_KEY;
+//    @Value("${jwt.secret-key}")
+    private String SECRET_KEY = "88293b6cd1b7b3b6b4323a1fb42e3c1ebf17776be2eab4f0121a77cc646935496fe3cd6b26b96f899b12388c26c7558f6837802293543512dc61426cb68553cd";
     @Value("Authorization")
-    private static String ACCESS_TOKEN_HEADER;
+    private String ACCESS_TOKEN_HEADER;
     @Value("Refresh-Token")
-    private static String REFRESH_TOKEN_HEADER;
+    private String REFRESH_TOKEN_HEADER;
 
     private final UserDetailsServiceImpl userDetailsService;
 

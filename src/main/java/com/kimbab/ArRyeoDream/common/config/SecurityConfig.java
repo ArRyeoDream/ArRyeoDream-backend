@@ -18,12 +18,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtResolver jwtResolver;
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer(){
         return (web) -> web.ignoring().antMatchers(
-                "/resources/**"
+                "/api/auth/signup",
+                "/api/auth/signin",
+                "/api/lecture/boards",
+                "/api/lecture/comment/**",
+                "/api/community/boards",
+                "/api/community/board/**",
+                "/api/community/comment/**"
         );
     }
 
@@ -31,6 +37,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http
                 .csrf().disable()
+                .exceptionHandling()
+                .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .formLogin().disable()
@@ -48,7 +56,7 @@ public class SecurityConfig {
                 ).permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtResolver), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
