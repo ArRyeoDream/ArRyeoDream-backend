@@ -1,4 +1,4 @@
-package com.kimbab.ArRyeoDream.common.controller;
+package com.kimbab.ArRyeoDream.controller;
 
 import com.kimbab.ArRyeoDream.lecture.dto.LectureCommentRequestDTO;
 import com.kimbab.ArRyeoDream.lecture.dto.LectureRequestDTO;
