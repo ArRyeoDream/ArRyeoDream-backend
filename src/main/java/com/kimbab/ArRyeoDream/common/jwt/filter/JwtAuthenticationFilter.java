@@ -48,6 +48,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         response.setCharacterEncoding("UTF-8");
         response.setStatus(errorCode.getStatus().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.getWriter().write(mapper.writeValueAsString(errorResponse));
+        response.getWriter().println(mapper.writeValueAsString(errorResponse));
+        response.flushBuffer();
     }
 }
