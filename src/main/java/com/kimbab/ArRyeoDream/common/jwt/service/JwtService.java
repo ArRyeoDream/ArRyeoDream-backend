@@ -43,16 +43,17 @@ public class JwtService {
     }
 
     public JwtTokenDTO refresh(String refreshToken, String oauth2Id){
+        String newRefreshToken = refreshToken;
         if(isValidate(refreshToken)){
             throw new BusinessException(ErrorCode.EXPIRED_REFRESH_TOKEN);
         }
         String accessToken = jwtProvider.createAccessToken(oauth2Id);
         if(isRefreshable(refreshToken)){
-            String newRefreshToken = jwtProvider.createRefreshToken();
+            newRefreshToken = jwtProvider.createRefreshToken();
         }
         return JwtTokenDTO.builder()
                 .accessToken(accessToken)
-                .refreshToken(refreshToken)
+                .refreshToken(newRefreshToken)
                 .build();
     }
 

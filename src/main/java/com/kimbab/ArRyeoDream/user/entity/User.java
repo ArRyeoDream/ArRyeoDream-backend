@@ -1,6 +1,5 @@
 package com.kimbab.ArRyeoDream.user.entity;
 
-import com.kimbab.ArRyeoDream.user.dto.Oauth2UserDTO;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

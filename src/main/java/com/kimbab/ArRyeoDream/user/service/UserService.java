@@ -12,10 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
     private final UserRepository userRepository;
 
-    public boolean existsByOauth2Id(String oauth2Id){
-        return userRepository.existsByOauth2Id(oauth2Id);
-    }
-
     public User findByOauth2Id(String oauth2Id){
         return userRepository.findByOauth2Id(oauth2Id).get();
     }

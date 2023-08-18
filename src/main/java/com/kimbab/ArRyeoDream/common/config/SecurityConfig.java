@@ -23,13 +23,12 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer(){
         return (web) -> web.ignoring().antMatchers(
-                "/api/auth/signup",
-                "/api/auth/signin",
+                "/api/auth/kakao",
                 "/api/lecture/boards",
+                "/api/lecture/boards/**",
                 "/api/lecture/comment/**",
                 "/api/community/boards",
-                "/api/community/board/**",
-                "/api/community/comment/**"
+                "/api/community/boards/**"
         );
     }
 
@@ -44,16 +43,6 @@ public class SecurityConfig {
                 .formLogin().disable()
                 .httpBasic().disable()
                 .authorizeRequests()
-                .antMatchers(
-                        "/api/auth/signup",
-                        "/api/auth/signin",
-                        "/api/lecture/boards",
-                        "/api/lecture/board/**",
-                        "/api/lecture/comment/**",
-                        "/api/community/boards",
-                        "/api/community/board/**",
-                        "/api/community/comment/**"
-                ).permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtResolver), UsernamePasswordAuthenticationFilter.class);

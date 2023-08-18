@@ -3,10 +3,12 @@ package com.kimbab.ArRyeoDream.controller;
 import com.kimbab.ArRyeoDream.community.dto.CommunityCommentRequestDTO;
 import com.kimbab.ArRyeoDream.community.dto.CommunityRequestDTO;
 import com.kimbab.ArRyeoDream.community.service.CommunityServiceImpl;
+import com.kimbab.ArRyeoDream.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,35 +29,35 @@ public class CommunityController {
     }
 
     @PostMapping("/board")
-    public ResponseEntity<?> saveLecture(@RequestBody CommunityRequestDTO communityRequestDTO){
-        return ResponseEntity.ok().body(communityService.saveCommunity(communityRequestDTO));
+    public ResponseEntity<?> saveLecture(@RequestBody CommunityRequestDTO communityRequestDTO, @AuthenticationPrincipal User user){
+        return ResponseEntity.ok().body(communityService.saveCommunity(communityRequestDTO, user));
     }
 
     @PutMapping("/board/{id}")
-    public ResponseEntity<?> updateLecture(@PathVariable(name = "id") Long id, @RequestBody CommunityRequestDTO communityRequestDTO){
-        return ResponseEntity.ok().body(communityService.updateCommunity(id, communityRequestDTO));
+    public ResponseEntity<?> updateLecture(@PathVariable(name = "id") Long id, @RequestBody CommunityRequestDTO communityRequestDTO, @AuthenticationPrincipal User user){
+        return ResponseEntity.ok().body(communityService.updateCommunity(id, communityRequestDTO, user));
     }
 
     @DeleteMapping("/board/{id}")
-    public ResponseEntity<?> deleteLecture(@PathVariable(name = "id") Long id){
-        communityService.deleteCommunity(id);
+    public ResponseEntity<?> deleteLecture(@PathVariable(name = "id") Long id, @AuthenticationPrincipal User user){
+        communityService.deleteCommunity(id, user);
         return ResponseEntity.ok().body(null);
     }
 
     // board comment api
     @PostMapping("/comment/{id}")
-    public ResponseEntity<?> saveComment(@RequestBody CommunityCommentRequestDTO communityCommentRequestDTO, @PathVariable(name = "id") Long id){
-        return ResponseEntity.ok().body(communityService.saveCommentInCommunity(communityCommentRequestDTO, id));
+    public ResponseEntity<?> saveComment(@RequestBody CommunityCommentRequestDTO communityCommentRequestDTO, @PathVariable(name = "id") Long id, @AuthenticationPrincipal User user){
+        return ResponseEntity.ok().body(communityService.saveCommentInCommunity(communityCommentRequestDTO, id, user));
     }
 
     @PutMapping("/comment/{id}")
-    public ResponseEntity<?> updateComment(@RequestBody CommunityCommentRequestDTO communityCommentRequestDTO, @PathVariable(name = "id") Long id){
-        return ResponseEntity.ok().body(communityService.updateCommentInCommunity(communityCommentRequestDTO, id));
+    public ResponseEntity<?> updateComment(@RequestBody CommunityCommentRequestDTO communityCommentRequestDTO, @PathVariable(name = "id") Long id, @AuthenticationPrincipal User user){
+        return ResponseEntity.ok().body(communityService.updateCommentInCommunity(communityCommentRequestDTO, id, user));
     }
 
     @DeleteMapping("/comment/{id}")
-    public ResponseEntity<?> deleteComment(@PathVariable(name = "id") Long id){
-        communityService.deleteCommentInCommunity(id);
+    public ResponseEntity<?> deleteComment(@PathVariable(name = "id") Long id, @AuthenticationPrincipal User user){
+        communityService.deleteCommentInCommunity(id, user);
         return ResponseEntity.ok().body(null);
     }
 

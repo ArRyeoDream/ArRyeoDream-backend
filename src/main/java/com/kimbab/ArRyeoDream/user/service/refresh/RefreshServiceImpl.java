@@ -55,7 +55,9 @@ public class RefreshServiceImpl implements RefreshService{
         if(findRefreshToken.isPresent()){
             refreshRepository.delete(findRefreshToken.get());
         }
-        throw new BusinessException(ErrorCode.INVALID_REFRESH_TOKEN);
+        else {
+            throw new BusinessException(ErrorCode.INVALID_REFRESH_TOKEN);
+        }
     }
 
     private Boolean isValidate(RefreshToken refreshToken){

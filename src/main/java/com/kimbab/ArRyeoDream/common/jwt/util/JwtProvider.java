@@ -1,5 +1,7 @@
 package com.kimbab.ArRyeoDream.common.jwt.util;
 
+import com.kimbab.ArRyeoDream.user.entity.User;
+import com.kimbab.ArRyeoDream.user.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -22,14 +24,21 @@ public class JwtProvider {
     private Long accessTokenValidTime;
     @Value("${jwt.refresh-token-expiry}")
     private Long refreshTokenValidTime;
+    private final UserService userService;
 
     private Key key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
 
     public String createAccessToken(String oAuth2Id){
+        User user = userService.findByOauth2Id(oAuth2Id);
+        if(user == null){
+            return null;
+        }
         Claims claims = Jwts.claims().setSubject(oAuth2Id);
         Date now = new Date();
         return Jwts.builder()
                 .setClaims(claims)
+                .claim("nickname", user.getNickname())
+                .claim("email", user.getEmail())
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + accessTokenValidTime))
                 .signWith(key)

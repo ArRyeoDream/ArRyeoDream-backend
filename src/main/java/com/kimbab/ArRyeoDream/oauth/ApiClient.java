@@ -19,9 +19,6 @@ public class ApiClient implements OAuthApiClient {
     @Value("${oauth.kakao.url.auth}")
     private String authUrl;
 
-    @Value("${oauth.kakao.url.api}")
-    private String apiUrl;
-
     @Value("${oauth.kakao.client-id}")
     private String clientId;
 
@@ -47,23 +44,5 @@ public class ApiClient implements OAuthApiClient {
 
         assert response != null;
         return response.getAccessToken();
-    }
-
-    @Override
-    public OAuthInfoResponse requestOauthInfo(String accessToken){
-        String url = apiUrl + "/v2/user/me";
-
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        httpHeaders.set("Authorization", "Bearer " + accessToken);
-
-        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add("property_keys", "[\"kakao_account.email\", \"kakao_account.profile\"]");
-
-        HttpEntity<?> request = new HttpEntity<>(body, httpHeaders);
-
-        InfoResponse response = restTemplate.postForObject(url, request, InfoResponse.class);
-        assert response != null;
-        return response;
     }
 }
