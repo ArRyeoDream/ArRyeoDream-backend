@@ -18,8 +18,7 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class RefreshServiceImpl implements RefreshService{
     private final RefreshTokenRepository refreshRepository;
-    @Value("${jwt.refresh-token-expiry}")
-    private Long refreshTokenExpiry = 0L;
+    private Long refreshTokenExpiry = 2592000000L;
 
     @Override
     @Transactional

@@ -18,12 +18,9 @@ import java.util.Date;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class JwtProvider {
-//    @Value("${jwt.secret-key}")
     private String secretKey = "88293b6cd1b7b3b6b4323a1fb42e3c1ebf17776be2eab4f0121a77cc646935496fe3cd6b26b96f899b12388c26c7558f6837802293543512dc61426cb68553cd";
-    @Value("${jwt.access-token-expiry}")
-    private Long accessTokenValidTime;
-    @Value("${jwt.refresh-token-expiry}")
-    private Long refreshTokenValidTime;
+    private Long accessTokenValidTime = 86400000L;
+    private Long refreshTokenValidTime = 2592000000L;
     private final UserService userService;
 
     private Key key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
