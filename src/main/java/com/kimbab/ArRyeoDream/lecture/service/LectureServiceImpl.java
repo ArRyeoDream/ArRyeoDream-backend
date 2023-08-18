@@ -4,13 +4,16 @@ import com.kimbab.ArRyeoDream.common.dto.PageResult;
 import com.kimbab.ArRyeoDream.common.error.BusinessException;
 import com.kimbab.ArRyeoDream.common.error.ErrorCode;
 import com.kimbab.ArRyeoDream.lecture.dto.*;
+import com.kimbab.ArRyeoDream.lecture.entity.ApplicationList;
 import com.kimbab.ArRyeoDream.lecture.entity.Lecture;
 import com.kimbab.ArRyeoDream.lecture.entity.LectureComment;
 import com.kimbab.ArRyeoDream.lecture.entity.LectureImage;
+import com.kimbab.ArRyeoDream.lecture.repository.ApplicationListRepository;
 import com.kimbab.ArRyeoDream.lecture.repository.LectureCommentRepository;
 import com.kimbab.ArRyeoDream.lecture.repository.LectureImageRepository;
 import com.kimbab.ArRyeoDream.lecture.repository.LectureRepository;
 import com.kimbab.ArRyeoDream.user.entity.Attendee;
+import com.kimbab.ArRyeoDream.user.entity.User;
 import com.kimbab.ArRyeoDream.user.repository.AttendeeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,6 +32,7 @@ public class LectureServiceImpl implements LectureService {
     private final LectureImageRepository lectureImageRepository;
     private final LectureCommentRepository lectureCommentRepository;
     private final AttendeeRepository attendeeRepository;
+    private final ApplicationListRepository applicationListRepository;
 
     @Override
     public PageResult<LectureListResponseDTO> getLectureList(Pageable pageable, String sort){
@@ -87,7 +91,7 @@ public class LectureServiceImpl implements LectureService {
 
     @Override
     @Transactional
-    public Long saveLecture(LectureRequestDTO lectureRequestDTO){
+    public Long saveLecture(LectureRequestDTO lectureRequestDTO, User user){
         try {
             Lecture lecture = Lecture.builder()
                     .title(lectureRequestDTO.getTitle())
@@ -95,7 +99,7 @@ public class LectureServiceImpl implements LectureService {
                     .region(regionArrayToString(lectureRequestDTO.getRegion()))
                     .week(weekArrayToString(lectureRequestDTO.getWeek()))
                     .views(0L)
-                    .userId(0L)
+                    .userId(user.getId())
                     .build();
             Lecture savedLecture = lectureRepository.save(lecture);
             
@@ -115,9 +119,12 @@ public class LectureServiceImpl implements LectureService {
 
     @Override
     @Transactional
-    public Long updateLecture(Long id, LectureRequestDTO lectureRequestDTO){
+    public Long updateLecture(Long id, LectureRequestDTO lectureRequestDTO, User user){
         Optional<Lecture> lecture = lectureRepository.findById(id);
         if(lecture.isPresent()){
+            if(lecture.get().getUserId() != user.getId()){
+                throw new BusinessException(ErrorCode.BAD_REQUEST);
+            }
             Lecture lectureData = lecture.get();
             lectureData.setTitle(lectureRequestDTO.getTitle());
             lectureData.setIntro(lectureRequestDTO.getIntro());
@@ -141,9 +148,12 @@ public class LectureServiceImpl implements LectureService {
 
     @Override
     @Transactional
-    public void deleteLecture(Long id){
+    public void deleteLecture(Long id, User user){
         Optional<Lecture> lecture = lectureRepository.findById(id);
         if(lecture.isPresent()){
+            if(lecture.get().getUserId() != user.getId()){
+                throw new BusinessException(ErrorCode.BAD_REQUEST);
+            }
             lectureImageRepository.deleteAllByLectureId(id);
             lectureCommentRepository.deleteAllByLectureId(id);
             lectureRepository.delete(lecture.get());
@@ -158,18 +168,13 @@ public class LectureServiceImpl implements LectureService {
     public Long saveCommentInLecture(LectureCommentRequestDTO lectureCommentRequestDTO, Long id){
         try {
             Optional<Attendee> getAttendee = attendeeRepository.findByNameAndPhone(lectureCommentRequestDTO.getName(), lectureCommentRequestDTO.getPhone());
-            if(getAttendee.isPresent()){
+            if(!getAttendee.isPresent()){
                 throw new BusinessException(ErrorCode.INVALID_ATTENDEE);
             }
-            Attendee attendee = Attendee.builder()
-                    .name(lectureCommentRequestDTO.getName())
-                    .phone(lectureCommentRequestDTO.getPhone())
-                    .build();
-            attendeeRepository.save(attendee);
             LectureComment comment = LectureComment.builder()
                     .lecture(lectureRepository.findById(id).get())
                     .content(lectureCommentRequestDTO.getContent())
-                    .attendee(attendee)
+                    .attendee(getAttendee.get())
                     .build();
             return lectureCommentRepository.save(comment).getId();
         } catch(Exception e){
@@ -205,6 +210,31 @@ public class LectureServiceImpl implements LectureService {
             lectureCommentRepository.delete(lectureCommentRepository.findById(id).get());
         } catch (Exception e){
             throw new BusinessException(ErrorCode.COMMENT_NOT_FOUND);
+        }
+    }
+
+    @Override
+    @Transactional
+    public Long applicationLecture(Long id, LectureApplicationRequestDTO lectureApplicationRequestDTO){
+        try{
+            Optional<Lecture> lecture = lectureRepository.findById(id);
+            if(lecture.isPresent()) {
+                Attendee attendee = Attendee.builder()
+                        .name(lectureApplicationRequestDTO.getName())
+                        .phone(lectureApplicationRequestDTO.getPhone())
+                        .build();
+                attendeeRepository.save(attendee);
+                ApplicationList applicationList = ApplicationList.builder()
+                        .lecture(lecture.get())
+                        .attendee(attendeeRepository.save(attendee))
+                        .build();
+                return applicationListRepository.save(applicationList).getId();
+            }
+            else{
+                throw new BusinessException(ErrorCode.LECTURE_NOT_FOUND);
+            }
+        } catch (Exception e){
+            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 

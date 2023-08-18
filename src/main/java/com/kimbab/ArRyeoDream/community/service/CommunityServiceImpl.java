@@ -10,6 +10,8 @@ import com.kimbab.ArRyeoDream.community.entity.CommunityImage;
 import com.kimbab.ArRyeoDream.community.repository.CommunityCommentRepository;
 import com.kimbab.ArRyeoDream.community.repository.CommunityImageRepository;
 import com.kimbab.ArRyeoDream.community.repository.CommunityRepository;
+import com.kimbab.ArRyeoDream.user.entity.User;
+import com.kimbab.ArRyeoDream.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +28,7 @@ public class CommunityServiceImpl implements CommunityService{
     private final CommunityRepository communityRepository;
     private final CommunityImageRepository communityImageRepository;
     private final CommunityCommentRepository communityCommentRepository;
+    private final UserRepository userRepository;
 
     @Override
     public PageResult<CommunityListResponseDTO> getCommunityList(Pageable pageable){
@@ -65,12 +68,12 @@ public class CommunityServiceImpl implements CommunityService{
 
     @Override
     @Transactional
-    public Long saveCommunity(CommunityRequestDTO communityRequestDTO){
+    public Long saveCommunity(CommunityRequestDTO communityRequestDTO, User user){
         try {
             Community community = Community.builder()
                     .title(communityRequestDTO.getTitle())
                     .content(communityRequestDTO.getContent())
-                    .userId(0L)
+                    .userId(user.getId())
                     .build();
             Community savedCommunity = communityRepository.save(community);
 
@@ -90,9 +93,12 @@ public class CommunityServiceImpl implements CommunityService{
 
     @Override
     @Transactional
-    public Long updateCommunity(Long id, CommunityRequestDTO communityRequestDTO){
+    public Long updateCommunity(Long id, CommunityRequestDTO communityRequestDTO, User user){
         Optional<Community> community = communityRepository.findById(id);
         if(community.isPresent()){
+            if(community.get().getUserId() != user.getId()){
+                throw new BusinessException(ErrorCode.BAD_REQUEST);
+            }
             Community communityData = community.get();
             communityData.setTitle(communityRequestDTO.getTitle());
             communityData.setContent(communityRequestDTO.getContent());
@@ -114,9 +120,12 @@ public class CommunityServiceImpl implements CommunityService{
 
     @Override
     @Transactional
-    public void deleteCommunity(Long id){
+    public void deleteCommunity(Long id, User user){
         Optional<Community> community = communityRepository.findById(id);
         if(community.isPresent()){
+            if(community.get().getUserId() != user.getId()){
+                throw new BusinessException(ErrorCode.BAD_REQUEST);
+            }
             communityImageRepository.deleteAllByCommunityId(id);
             communityCommentRepository.deleteAllByCommunityId(id);
             communityRepository.delete(community.get());
@@ -128,12 +137,12 @@ public class CommunityServiceImpl implements CommunityService{
 
     @Override
     @Transactional
-    public Long saveCommentInCommunity(CommunityCommentRequestDTO communityCommentRequestDTO, Long id){
+    public Long saveCommentInCommunity(CommunityCommentRequestDTO communityCommentRequestDTO, Long id, User user){
         try {
             CommunityComment comment = CommunityComment.builder()
                     .community(communityRepository.findById(id).get())
                     .content(communityCommentRequestDTO.getContent())
-                    .userId(0L)
+                    .userId(user.getId())
                     .build();
             return communityCommentRepository.save(comment).getId();
         } catch(Exception e){
@@ -143,10 +152,13 @@ public class CommunityServiceImpl implements CommunityService{
 
     @Override
     @Transactional
-    public Long updateCommentInCommunity(CommunityCommentRequestDTO communityCommentRequestDTO, Long id){
+    public Long updateCommentInCommunity(CommunityCommentRequestDTO communityCommentRequestDTO, Long id, User user){
         Optional<Community> community = communityRepository.findById(id);
         if(community.isPresent()){
             try {
+                if(community.get().getUserId() != user.getId()){
+                    throw new BusinessException(ErrorCode.BAD_REQUEST);
+                }
                 CommunityComment comment = communityCommentRepository.findByCommunityId(id);
                 comment.setCommunity(community.get());
                 comment.setContent(communityCommentRequestDTO.getContent());
@@ -163,8 +175,11 @@ public class CommunityServiceImpl implements CommunityService{
 
     @Override
     @Transactional
-    public void deleteCommentInCommunity(Long id){
+    public void deleteCommentInCommunity(Long id, User user){
         try {
+            if(communityCommentRepository.findById(id).get().getUserId() != user.getId()){
+                throw new BusinessException(ErrorCode.BAD_REQUEST);
+            }
             communityCommentRepository.delete(communityCommentRepository.findById(id).get());
         } catch (Exception e){
             throw new BusinessException(ErrorCode.COMMENT_NOT_FOUND);
